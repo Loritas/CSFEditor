@@ -6,6 +6,22 @@
 #include <unordered_map>
 #include <map>
 
+enum class CSFLanguage
+{
+	US = 0,
+	UK,
+	German,
+	French,
+	Spanish,
+	Italian,
+	Japanese,
+	Jabberwockie, // EasterEgg? XD
+	Korean,
+	Chinese,
+	AresUnknown = -1 // Ares uses this
+};
+
+
 class CSFFile final
 {
 	// Public functions
@@ -31,15 +47,22 @@ protected:
 	bool open(std::ifstream& fin);
 	bool parse(char* buffer) const;
 	
+	std::wstring decode(char* src, size_t len) const;
+
 	// And for properties, we just use private XD.
 private:
 	using key_type = std::string;
-	using value_type = std::vector<std::string>;
+	using value_type = std::vector<std::pair<std::wstring, std::string>>;
 
 	bool _ordered;
 	std::string _path;
 	std::unordered_map<key_type, value_type> _udata;
 	std::map<key_type, value_type> _odata;
 
-};
+	// CSF Header information
+	int32_t _version;
+	int32_t _numLabels;
+	int32_t _numStrings;
+	CSFLanguage _lang;
 
+};
