@@ -6,11 +6,12 @@
 
 int main(int argc, char** argv)
 {
+    // For Unicode output
     std::locale lc("zh_CN.UTF-8");
     std::locale::global(lc);
 
     CSFFile file("D:\\stringtable02.csf");
-    auto& data = file.get_unordered_map();
+    auto& data = file.get_map();
     size_t cnt = 0;
     for (auto& data_itr : data)
         for (auto& pair_itr : data_itr.second)

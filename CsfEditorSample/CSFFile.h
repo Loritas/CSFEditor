@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <map>
 
 enum class CSFLanguage
@@ -21,7 +20,6 @@ enum class CSFLanguage
 	AresUnknown = -1 // Ares uses this
 };
 
-
 class CSFFile final
 {
 private:
@@ -35,7 +33,7 @@ public:
 	explicit CSFFile() = delete; // Nope
 
 	// We use unordered_map defaultly for effeciency.
-	explicit CSFFile(std::string path, bool ordered = false);
+	explicit CSFFile(std::string path);
 
 	~CSFFile() = default; // No stupid pointers, just uses default
 	CSFFile(CSFFile& lhs) = default;
@@ -48,7 +46,6 @@ public:
 	value_type& operator[](key_type label);
 
 	std::map<key_type, value_type>& get_map();
-	std::unordered_map<key_type, value_type>& get_unordered_map();
 
 	// In this sample, we use protected for private functions,
 	// Though this is a final class, and cannot be inheritted.
@@ -64,7 +61,6 @@ protected:
 private:
 	bool _ordered;
 	std::string _path;
-	std::unordered_map<key_type, value_type> _udata;
 	std::map<key_type, value_type> _odata;
 
 	// CSF Header information

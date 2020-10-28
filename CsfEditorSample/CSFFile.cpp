@@ -2,13 +2,12 @@
 
 #include <algorithm>
 
-CSFFile::CSFFile(std::string path, bool ordered)
+CSFFile::CSFFile(std::string path)
 {
 	std::ifstream fin;
 	fin.open(path, std::ios::in | std::ios::binary);
 	if (open(fin)) {
 		_path = path;
-		_ordered = ordered;
 	}
 }
 
@@ -17,49 +16,22 @@ std::map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_map()
 	return _odata;
 }
 
-std::unordered_map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_unordered_map()
-{
-	return _udata;
-}
-
 CSFFile::value_type CSFFile::get_value(key_type label)
 {
-	if (_ordered)
-	{
-		auto finditr = _odata.find(label);
-		if (finditr != _odata.end())
-			return finditr->second;
-		else
-			return default_value;
-	}
+	auto finditr = _odata.find(label);
+	if (finditr != _odata.end())
+		return finditr->second;
 	else
-	{
-		auto finditr = _udata.find(label);
-		if (finditr != _udata.end())
-			return finditr->second;
-		else
-			return default_value;
-	}
+		return default_value;
 }
 
 CSFFile::value_type& CSFFile::get_value_reference(key_type label)
 {
-	if (_ordered)
-	{
-		auto finditr = _odata.find(label);
-		if (finditr != _odata.end())
-			return finditr->second;
-		else
-			return default_value;
-	}
+	auto finditr = _odata.find(label);
+	if (finditr != _odata.end())
+		return finditr->second;
 	else
-	{
-		auto finditr = _udata.find(label);
-		if (finditr != _udata.end())
-			return finditr->second;
-		else
-			return default_value;
-	}
+		return default_value;
 }
 
 CSFFile::value_type& CSFFile::operator[](key_type label)
@@ -145,11 +117,7 @@ bool CSFFile::parse(char* buffer)
 				
 				value_pair[j] = std::make_pair(value, exvalue);
 			}
-
-			if (!_ordered)
-				_udata[labelstr] = value_pair;
-			else
-				_odata[labelstr] = value_pair;
+			_odata[labelstr] = value_pair;
 		}
 		else
 			return false;
@@ -160,7 +128,7 @@ bool CSFFile::parse(char* buffer)
 std::wstring CSFFile::decode(char* src, size_type len)
 {
 	std::wstring ret;
-	ret.resize(len << 1);
+	ret.resize(len);
 	char* pret = (char*)&ret[0];
 	for (size_t i = 0; i < len << 1; ++i)
 		pret[i] = ~src[i];
