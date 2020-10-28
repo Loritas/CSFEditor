@@ -12,18 +12,75 @@ CSFFile::CSFFile(std::string path, bool ordered)
 	}
 }
 
+std::map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_map()
+{
+	return _odata;
+}
+
+std::unordered_map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_unordered_map()
+{
+	return _udata;
+}
+
+CSFFile::value_type CSFFile::get_value(key_type label)
+{
+	if (_ordered)
+	{
+		auto finditr = _odata.find(label);
+		if (finditr != _odata.end())
+			return finditr->second;
+		else
+			return default_value;
+	}
+	else
+	{
+		auto finditr = _udata.find(label);
+		if (finditr != _udata.end())
+			return finditr->second;
+		else
+			return default_value;
+	}
+}
+
+CSFFile::value_type& CSFFile::get_value_reference(key_type label)
+{
+	if (_ordered)
+	{
+		auto finditr = _odata.find(label);
+		if (finditr != _odata.end())
+			return finditr->second;
+		else
+			return default_value;
+	}
+	else
+	{
+		auto finditr = _udata.find(label);
+		if (finditr != _udata.end())
+			return finditr->second;
+		else
+			return default_value;
+	}
+}
+
+CSFFile::value_type& CSFFile::operator[](key_type label)
+{
+	return get_value_reference(label);
+}
+
 bool CSFFile::open(std::ifstream& fin)
 {
 	if (!fin.is_open())
 		return false;
 
 	fin.seekg(0, std::ios::end);
-	size_t filesize = fin.tellg();
+	size_type filesize = fin.tellg();
 	char* buffer = new char[filesize];
 	fin.seekg(0, std::ios::beg);
 	fin.read(buffer, filesize);
 	fin.close();
-	return parse(buffer);
+	bool flag = parse(buffer);
+	delete[] buffer;
+	return flag;
 }
 
 bool CSFFile::parse(char* buffer)
@@ -36,7 +93,7 @@ bool CSFFile::parse(char* buffer)
 		pos += 4;
 	};
 
-	// Parse CSF Header
+	// Parse CSF header
 	if (memcmp(pos, " FSC", 0x4) != 0)
 		return false;
 	pos += 4;
@@ -46,8 +103,10 @@ bool CSFFile::parse(char* buffer)
 	pos += 4; // useless
 	read_int(&_lang);
 
+	// Read CSF labels
 	for (int i = 0; i < _numLabels; ++i)
 	{
+		// Read CSF label header
 		int identifier;
 		read_int(&identifier);
 		if (identifier == 0x4C424C20) // " LBL"
@@ -56,16 +115,17 @@ bool CSFFile::parse(char* buffer)
 			read_int(&numPairs);
 			int strLength;
 			read_int(&strLength);
-			CSFFile::key_type labelstr;
+			key_type labelstr;
 			labelstr.resize(strLength);
 			memcpy(&labelstr[0], pos, strLength);
 			pos += strLength;
 			// CSF labels are not case sensitive.
 			std::transform(labelstr.begin(), labelstr.end(), labelstr.begin(), tolower);
 			
-			CSFFile::value_type value_pair;
+			value_type value_pair;
 			value_pair.resize(numPairs);
 
+			// Read CSF value pairs
 			for (int j = 0; j < numPairs; ++j)
 			{
 				read_int(&identifier);
@@ -79,6 +139,10 @@ bool CSFFile::parse(char* buffer)
 					exvalue.resize(strLength);
 					memcpy(&exvalue[0], pos, strLength);
 				}
+				// optimize for memory
+				value.shrink_to_fit();
+				exvalue.shrink_to_fit();
+				
 				value_pair[j] = std::make_pair(value, exvalue);
 			}
 
@@ -87,17 +151,20 @@ bool CSFFile::parse(char* buffer)
 			else
 				_odata[labelstr] = value_pair;
 		}
+		else
+			return false;
 	}
-
+	return true;
 }
 
-std::wstring CSFFile::decode(char* src, size_t len)
+std::wstring CSFFile::decode(char* src, size_type len)
 {
 	std::wstring ret;
 	ret.resize(len << 1);
 	char* pret = (char*)&ret[0];
-	for (int i = 0; i < len << 1; ++i)
+	for (size_t i = 0; i < len << 1; ++i)
 		pret[i] = ~src[i];
-	ret.assign((wchar_t*)pret);
 	return ret;
 }
+
+CSFFile::value_type CSFFile::default_value;
