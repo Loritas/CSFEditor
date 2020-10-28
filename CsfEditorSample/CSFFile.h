@@ -59,9 +59,8 @@ protected:
 
 	// And for properties, we just use private XD.
 private:
-	bool _ordered;
 	std::string _path;
-	std::map<key_type, value_type> _odata;
+	std::map<key_type, value_type> _data;
 
 	// CSF Header information
 	int32_t _version;

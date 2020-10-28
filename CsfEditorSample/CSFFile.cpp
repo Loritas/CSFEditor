@@ -13,13 +13,13 @@ CSFFile::CSFFile(std::string path)
 
 std::map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_map()
 {
-	return _odata;
+	return _data;
 }
 
 CSFFile::value_type CSFFile::get_value(key_type label)
 {
-	auto finditr = _odata.find(label);
-	if (finditr != _odata.end())
+	auto finditr = _data.find(label);
+	if (finditr != _data.end())
 		return finditr->second;
 	else
 		return default_value;
@@ -27,8 +27,8 @@ CSFFile::value_type CSFFile::get_value(key_type label)
 
 CSFFile::value_type& CSFFile::get_value_reference(key_type label)
 {
-	auto finditr = _odata.find(label);
-	if (finditr != _odata.end())
+	auto finditr = _data.find(label);
+	if (finditr != _data.end())
 		return finditr->second;
 	else
 		return default_value;
@@ -117,7 +117,7 @@ bool CSFFile::parse(char* buffer)
 				
 				value_pair[j] = std::make_pair(value, exvalue);
 			}
-			_odata[labelstr] = value_pair;
+			_data[labelstr] = value_pair;
 		}
 		else
 			return false;
