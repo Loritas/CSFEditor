@@ -1,6 +1,10 @@
-﻿#include <iostream>
+﻿#include "CSFFile.h"
+
+#include <iostream>
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    CSFFile file("D:\\Project\\CSF Merge\\CSF Merge\\csfs\\stringtable1.csf");
+    file._udata;
+
 }

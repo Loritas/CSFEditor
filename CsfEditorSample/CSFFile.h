@@ -40,14 +40,13 @@ public:
 	// Other public functions
 
 
-
 	// In this sample, we use protected for private functions,
 	// Though this is a final class, and cannot be inheritted.
 protected:
 	bool open(std::ifstream& fin);
-	bool parse(char* buffer) const;
+	bool parse(char* buffer);
 	
-	std::wstring decode(char* src, size_t len) const;
+	std::wstring decode(char* src, size_t len);
 
 	// And for properties, we just use private XD.
 private:
@@ -56,6 +55,7 @@ private:
 
 	bool _ordered;
 	std::string _path;
+public:
 	std::unordered_map<key_type, value_type> _udata;
 	std::map<key_type, value_type> _odata;
 

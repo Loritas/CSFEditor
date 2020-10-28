@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-CSFFile::CSFFile(std::string path, bool ordered = false)
+CSFFile::CSFFile(std::string path, bool ordered)
 {
 	std::ifstream fin;
 	fin.open(path, std::ios::in | std::ios::binary);
@@ -26,7 +26,7 @@ bool CSFFile::open(std::ifstream& fin)
 	return parse(buffer);
 }
 
-bool CSFFile::parse(char* buffer) const
+bool CSFFile::parse(char* buffer)
 {
 	char* pos = buffer;
 
@@ -50,35 +50,54 @@ bool CSFFile::parse(char* buffer) const
 	{
 		int identifier;
 		read_int(&identifier);
-		pos += 4;
 		if (identifier == 0x4C424C20) // " LBL"
 		{
 			int numPairs;
 			read_int(&numPairs);
 			int strLength;
 			read_int(&strLength);
-			std::string labelstr;
+			CSFFile::key_type labelstr;
 			labelstr.resize(strLength);
 			memcpy(&labelstr[0], pos, strLength);
 			pos += strLength;
 			// CSF labels are not case sensitive.
 			std::transform(labelstr.begin(), labelstr.end(), labelstr.begin(), tolower);
-			read_int(&identifier);
-			read_int(&strLength);
-			std::wstring value = decode(pos, strLength);
+			
+			CSFFile::value_type value_pair;
+			value_pair.resize(numPairs);
 
+			for (int j = 0; j < numPairs; ++j)
+			{
+				read_int(&identifier);
+				read_int(&strLength);
+				std::wstring value = decode(pos, strLength);
+				std::string exvalue;
+				pos += strLength << 1;
+				if (identifier == 0x53545257) // "WRTS"
+				{
+					read_int(&strLength);
+					exvalue.resize(strLength);
+					memcpy(&exvalue[0], pos, strLength);
+				}
+				value_pair[j] = std::make_pair(value, exvalue);
+			}
+
+			if (!_ordered)
+				_udata[labelstr] = value_pair;
+			else
+				_odata[labelstr] = value_pair;
 		}
 	}
 
 }
 
-std::wstring CSFFile::decode(char* src, size_t len) const
+std::wstring CSFFile::decode(char* src, size_t len)
 {
 	std::wstring ret;
 	ret.resize(len << 1);
 	char* pret = (char*)&ret[0];
-	for (int i = 0; i < len; ++i)
+	for (int i = 0; i < len << 1; ++i)
 		pret[i] = ~src[i];
-	std::wstring ret((wchar_t*)pret);
+	ret.assign((wchar_t*)pret);
 	return ret;
 }
