@@ -33,6 +33,12 @@ void init(int& argc, char** argv)
 int main(int argc, char** argv)
 {
     init(argc, argv);
-    CSFFile file("D:\\Project\\CSF Merge\\CSF Merge\\csfs\\stringtable4.csf");
+    CSFFile file("D:\\\stringtable02.csf");
+    auto& data = file.get_map();
+    data["SBMH"].push_back(std::make_pair(L"MH果然是NT！！！", "This is an extra value"));
+    data["SBMH"].push_back(std::make_pair(L"MH果然还是NT！！！", ""));
+    file.save_to_file("D:\\stringtable03.csf");
+    file.~CSFFile();
+    CSFFile file2("D:\\stringtable03.csf");
     return 0;
 }

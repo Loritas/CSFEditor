@@ -38,9 +38,11 @@ bool CSFFile::save_to_file(std::string path)
 {
 	std::ofstream fout;
 	fout.open(path, std::ios::out | std::ios::binary);
+	bool flag = false;
 	if (fout.is_open())
-		return write(fout);
-	return false;
+		flag = write(fout);
+	fout.close();
+	return flag;
 }
 
 CSFFile::value_type& CSFFile::operator[](key_type label)
@@ -145,6 +147,14 @@ std::wstring CSFFile::decode(char* src, size_type len)
 	return ret;
 }
 
+void CSFFile::encode(std::wstring& src, char* buffer)
+{
+	size_t length = src.length() >> 1;
+	char* pSrc = (char*)&src[0];
+	for (size_t i = 0; i < length; ++i)
+		buffer[i] = ~pSrc[i];
+}
+
 bool CSFFile::write(std::ofstream& fout)
 {
 	if (!fout.is_open())
@@ -166,7 +176,7 @@ bool CSFFile::write(std::ofstream& fout)
 	for (auto& x : _data)
 		_stringNums += x.second.size();
 	write_int(_stringNums);
-	write_to_stream("SBMH", 4); // useless
+	write_to_stream("SBMH"); // useless
 	write_int((int)_lang);
 
 	// CSF labels
@@ -187,11 +197,19 @@ bool CSFFile::write(std::ofstream& fout)
 				write_to_stream("WRTS");
 
 			write_int(pr.first.length());
-			// encode TODO
+			char* buffer = new char[pr.first.length() >> 1];
+			encode(pr.first, buffer);
+			write_to_stream(buffer, pr.first.length() >> 1);
+			delete[] buffer;
+
+			if (!pr.second.empty())
+			{
+				write_int(pr.second.length());
+				write_to_stream(pr.second.c_str(), pr.second.length());
+			}
 		}
 	}
-
-
+	return true;
 }
 
 CSFFile::value_type CSFFile::default_value;

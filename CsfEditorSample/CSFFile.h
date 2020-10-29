@@ -55,7 +55,7 @@ protected:
 	bool open(std::ifstream& fin);
 	bool parse(char* buffer);
 	std::wstring decode(char* src, size_type len);
-
+	void encode(std::wstring& src, char* buffer);
 	bool write(std::ofstream& fout);
 
 private:
