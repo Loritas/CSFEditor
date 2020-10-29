@@ -122,6 +122,7 @@ bool CSFFile::parse(char* buffer)
 					read_int(&strLength);
 					exvalue.resize(strLength);
 					memcpy(&exvalue[0], pos, strLength);
+					pos += strLength;
 				}
 				// optimize for memory
 				value.shrink_to_fit();
@@ -149,7 +150,7 @@ std::wstring CSFFile::decode(char* src, size_type len)
 
 void CSFFile::encode(std::wstring& src, char* buffer)
 {
-	size_t length = src.length() >> 1;
+	size_t length = src.length() << 1;
 	char* pSrc = (char*)&src[0];
 	for (size_t i = 0; i < length; ++i)
 		buffer[i] = ~pSrc[i];
@@ -197,9 +198,9 @@ bool CSFFile::write(std::ofstream& fout)
 				write_to_stream("WRTS");
 
 			write_int(pr.first.length());
-			char* buffer = new char[pr.first.length() >> 1];
+			char* buffer = new char[pr.first.length() << 1];
 			encode(pr.first, buffer);
-			write_to_stream(buffer, pr.first.length() >> 1);
+			write_to_stream(buffer, pr.first.length() << 1);
 			delete[] buffer;
 
 			if (!pr.second.empty())
