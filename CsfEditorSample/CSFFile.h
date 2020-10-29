@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-enum class CSFLanguage
+enum class CSFLanguage : int
 {
 	US = 0,
 	UK,
@@ -47,14 +47,18 @@ public:
 
 	std::map<key_type, value_type>& get_map();
 
+	bool save_to_file(std::string path);
+
 	// In this sample, we use protected for private functions,
 	// Though this is a final class, and cannot be inheritted.
 protected:
 	bool open(std::ifstream& fin);
 	bool parse(char* buffer);
-	
 	std::wstring decode(char* src, size_type len);
 
+	bool write(std::ofstream& fout);
+
+private:
 	static value_type default_value;
 
 	// And for properties, we just use private XD.
@@ -64,8 +68,6 @@ private:
 
 	// CSF Header information
 	int32_t _version;
-	int32_t _numLabels;
-	int32_t _numStrings;
 	CSFLanguage _lang;
 
 };

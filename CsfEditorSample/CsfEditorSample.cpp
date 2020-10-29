@@ -33,6 +33,6 @@ void init(int& argc, char** argv)
 int main(int argc, char** argv)
 {
     init(argc, argv);
-    CSFFile file("D:\\stringtable02.csf");
+    CSFFile file("D:\\Project\\CSF Merge\\CSF Merge\\csfs\\stringtable4.csf");
     return 0;
 }

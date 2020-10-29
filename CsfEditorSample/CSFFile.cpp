@@ -34,6 +34,15 @@ CSFFile::value_type& CSFFile::get_value_reference(key_type label)
 		return default_value;
 }
 
+bool CSFFile::save_to_file(std::string path)
+{
+	std::ofstream fout;
+	fout.open(path, std::ios::out | std::ios::binary);
+	if (fout.is_open())
+		return write(fout);
+	return false;
+}
+
 CSFFile::value_type& CSFFile::operator[](key_type label)
 {
 	return get_value_reference(label);
@@ -70,8 +79,9 @@ bool CSFFile::parse(char* buffer)
 		return false;
 	pos += 4;
 	read_int(&_version);
+	int _numLabels;
 	read_int(&_numLabels);
-	read_int(&_numStrings);
+	pos += 4; // numstrings
 	pos += 4; // useless
 	read_int(&_lang);
 
@@ -133,6 +143,55 @@ std::wstring CSFFile::decode(char* src, size_type len)
 	for (size_t i = 0; i < len << 1; ++i)
 		pret[i] = ~src[i];
 	return ret;
+}
+
+bool CSFFile::write(std::ofstream& fout)
+{
+	if (!fout.is_open())
+		return false;
+
+	auto write_to_stream = [&fout](const void* buffer, size_t size = 4) {
+		fout.write((const char*)buffer, size);
+	};
+
+	auto write_int = [&fout](int n){
+		fout.write((const char*)&n, 4);
+	};
+
+	// CSF header
+	write_to_stream(" FSC");
+	write_int(_version);
+	write_int(_data.size());
+	int _stringNums = 0;
+	for (auto& x : _data)
+		_stringNums += x.second.size();
+	write_int(_stringNums);
+	write_to_stream("SBMH", 4); // useless
+	write_int((int)_lang);
+
+	// CSF labels
+	for (auto& lbl : _data)
+	{
+		// label
+		write_to_stream(" LBL");
+		write_int(lbl.second.size());
+		write_int(lbl.first.length());
+		write_to_stream(lbl.first.c_str(), lbl.first.length());
+
+		// value
+		for (auto& pr : lbl.second)
+		{
+			if (pr.second.empty())
+				write_to_stream(" RTS");
+			else
+				write_to_stream("WRTS");
+
+			write_int(pr.first.length());
+			// encode TODO
+		}
+	}
+
+
 }
 
 CSFFile::value_type CSFFile::default_value;
