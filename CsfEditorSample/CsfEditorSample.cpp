@@ -11,7 +11,8 @@ void init_command_line(int& argc, char** argv)
         // TODO : implement
     };
 
-    for (int i = 0; i < argc; ++i)
+    // Start from one, for zero is where our program locates.
+    for (int i = 1; i < argc; ++i)
         ArgParser(argv[i]);
 }
 
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
     data["SBMH"].push_back(std::make_pair(L"MH果然是NT！！！", "This is an extra value"));
     data["SBMH"].push_back(std::make_pair(L"MH果然还是NT！！！", ""));
     file.save_to_file("D:\\stringtable03.csf");
-    file.~CSFFile();
     CSFFile file2("D:\\stringtable03.csf");
+    system("pause");
     return 0;
 }
