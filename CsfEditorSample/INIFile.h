@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <string>
-#include <map>
+#include <map> // consider to use unordered_map for efficency if order is not that essential
 #include <vector>
 
 class INIFile final
