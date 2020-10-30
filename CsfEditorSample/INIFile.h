@@ -9,7 +9,6 @@ class INIFile final
 {
 private:
     using INISection = std::map<std::string, std::string>;
-    // using OrderedINISection = std::map<unsigned int, INIPair>;
 
 public:
     explicit INIFile() = delete;
@@ -22,14 +21,19 @@ public:
     INIFile& operator=(const INIFile& rhs) = default;
     INIFile& operator=(INIFile&& rhs) = default;
 
+    bool save_to_file(std::string path) const;
+    std::map<std::string, INISection>& get_map();
+
+    INISection& operator[](std::string section);
+
 protected:
     bool open(std::ifstream& fin);
     bool parse(std::ifstream& fin);
-    bool write(std::ofstream& fout);
+    bool write(std::ofstream& fout) const;
 
 private:
     std::string _path;
     std::map<std::string, INISection> _data;
-    std::vector<std::string> _errors;
+    // std::vector<std::string> _errors;
 };
 

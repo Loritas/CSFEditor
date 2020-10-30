@@ -18,20 +18,12 @@ std::map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_map()
 
 CSFFile::value_type CSFFile::get_value(key_type label)
 {
-	auto finditr = _data.find(label);
-	if (finditr != _data.end())
-		return finditr->second;
-	else
-		return default_value;
+	return _data[label];
 }
 
 CSFFile::value_type& CSFFile::get_value_reference(key_type label)
 {
-	auto finditr = _data.find(label);
-	if (finditr != _data.end())
-		return finditr->second;
-	else
-		return default_value;
+	return _data[label];
 }
 
 bool CSFFile::save_to_file(std::string path)

@@ -1,4 +1,5 @@
 ﻿#include "CSFFile.h"
+#include "INIFile.h"
 
 #include <iostream>
 #include <locale>
@@ -46,5 +47,8 @@ int main(int argc, char** argv)
     file.save_to_file("D:\\stringtable03.csf");
     CSFFile file2("D:\\stringtable03.csf");
     
+    INIFile inirules("C:\\Users\\30270\\Desktop\\rulesmo.ini");
+    inirules.save_to_file("C:\\Users\\30270\\Desktop\\testrule.ini");
+
     return 0;
 }
