@@ -32,12 +32,13 @@ public:
 	// THE FIVES
 	explicit CSFFile() = delete; // Nope
 
-	// We use unordered_map defaultly for effeciency.
 	explicit CSFFile(std::string path);
 
-	~CSFFile() = default; // No stupid pointers, just uses default
+	~CSFFile() = default;
 	CSFFile(CSFFile& lhs) = default;
 	CSFFile(CSFFile&& rhs) = default;
+	CSFFile& operator=(const CSFFile& rhs) = default;
+	CSFFile& operator=(CSFFile&& rhs) = default;
 
 	// Other public functions
 	value_type get_value(key_type label);

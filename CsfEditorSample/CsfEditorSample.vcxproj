@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26812;4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,9 +142,11 @@
   <ItemGroup>
     <ClCompile Include="CsfEditorSample.cpp" />
     <ClCompile Include="CSFFile.cpp" />
+    <ClCompile Include="INIFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSFFile.h" />
+    <ClInclude Include="INIFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

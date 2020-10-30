@@ -8,11 +8,12 @@ void init_command_line(int& argc, char** argv)
 {
     auto ArgParser = [](char* pArg)
     {
+        // printf("%s\n", pArg);
+        // system("pause");
         // TODO : implement
     };
 
-    // Start from one, for zero is where our program locates.
-    for (int i = 1; i < argc; ++i)
+    for (int i = 0; i < argc; ++i)
         ArgParser(argv[i]);
 }
 
@@ -45,7 +46,5 @@ int main(int argc, char** argv)
     file.save_to_file("D:\\stringtable03.csf");
     CSFFile file2("D:\\stringtable03.csf");
     
-
-
     return 0;
 }
