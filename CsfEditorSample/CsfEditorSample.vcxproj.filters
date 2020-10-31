@@ -38,5 +38,8 @@
     <ClInclude Include="PALFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="IRAFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <fstream>
-#include <string>
+#include "IRAFile.h"
+
 #include <vector>
 #include <map>
 
@@ -20,7 +20,7 @@ enum class CSFLanguage : int
 	AresUnknown = -1 // Ares uses this
 };
 
-class CSFFile final
+class CSFFile final : public IRAFile
 {
 private:
 	using size_type = size_t;
@@ -48,16 +48,19 @@ public:
 
 	std::map<key_type, value_type>& get_map();
 
-	bool save_to_file(std::string path);
+	bool open_from_file(const std::string& path);
+	bool save_to_file(const std::string& path) const;
+	bool if_from_file() const;
+	std::string get_path() const;
 
 	// In this sample, we use protected for private functions,
 	// Though this is a final class, and cannot be inheritted.
 protected:
 	bool open(std::ifstream& fin);
-	bool parse(char* buffer);
+	bool parse(std::ifstream& fin);
 	std::wstring decode(char* src, size_type len);
 	void encode(std::wstring& src, char* buffer);
-	bool write(std::ofstream& fout);
+	bool write(std::ofstream& fout) const;
 
 private:
 	static value_type default_value;

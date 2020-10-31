@@ -2,20 +2,37 @@
 
 INIFile::INIFile(std::string path)
 {
+	open_from_file(path);
+}
+
+bool INIFile::open_from_file(const std::string& path)
+{
 	std::ifstream fin;
 	fin.open(path, std::ios::in);
 	if (open(fin)) {
 		_path = path;
+		return true;
 	}
+	return false;
 }
 
-bool INIFile::save_to_file(std::string path) const
+bool INIFile::save_to_file(const std::string& path) const
 {
 	std::ofstream fout;
 	fout.open(path, std::ios::out);
 	bool flag = write(fout);
 	fout.close();
 	return flag;
+}
+
+bool INIFile::if_from_file() const
+{
+	return !_path.empty();
+}
+
+std::string INIFile::get_path() const
+{
+	return _path;
 }
 
 std::map<std::string, INIFile::INISection>& INIFile::get_map()

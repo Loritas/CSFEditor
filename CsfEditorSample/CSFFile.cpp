@@ -4,11 +4,7 @@
 
 CSFFile::CSFFile(std::string path)
 {
-	std::ifstream fin;
-	fin.open(path, std::ios::in | std::ios::binary);
-	if (open(fin)) {
-		_path = path;
-	}
+	open_from_file(path);
 }
 
 std::map<CSFFile::key_type, CSFFile::value_type>& CSFFile::get_map()
@@ -26,7 +22,28 @@ CSFFile::value_type& CSFFile::get_value_reference(key_type label)
 	return _data[label];
 }
 
-bool CSFFile::save_to_file(std::string path)
+bool CSFFile::open_from_file(const std::string& path)
+{
+	std::ifstream fin;
+	fin.open(path, std::ios::in | std::ios::binary);
+	if (open(fin)) {
+		_path = path;
+		return true;
+	}
+	return false;
+}
+
+bool CSFFile::if_from_file() const
+{
+	return !_path.empty();
+}
+
+std::string CSFFile::get_path() const
+{
+	return _path;
+}
+
+bool CSFFile::save_to_file(const std::string& path) const
 {
 	std::ofstream fout;
 	fout.open(path, std::ios::out | std::ios::binary);
@@ -46,20 +63,20 @@ bool CSFFile::open(std::ifstream& fin)
 {
 	if (!fin.is_open())
 		return false;
+	bool flag = false;
+	flag = parse(fin);
+	fin.close();
+	return flag;
+}
 
+bool CSFFile::parse(std::ifstream& fin)
+{
 	fin.seekg(0, std::ios::end);
 	size_type filesize = fin.tellg();
 	char* buffer = new char[filesize];
 	fin.seekg(0, std::ios::beg);
 	fin.read(buffer, filesize);
-	fin.close();
-	bool flag = parse(buffer);
-	delete[] buffer;
-	return flag;
-}
 
-bool CSFFile::parse(char* buffer)
-{
 	char* pos = buffer;
 
 	auto read_int = [&pos](const void* dest)
@@ -69,8 +86,10 @@ bool CSFFile::parse(char* buffer)
 	};
 
 	// Parse CSF header
-	if (memcmp(pos, " FSC", 0x4) != 0)
+	if (memcmp(pos, " FSC", 0x4) != 0) {
+		delete[] buffer;
 		return false;
+	}
 	pos += 4;
 	read_int(&_version);
 	int _numLabels;
@@ -124,9 +143,12 @@ bool CSFFile::parse(char* buffer)
 			}
 			_data[labelstr] = value_pair;
 		}
-		else
+		else {
+			delete[] buffer;
 			return false;
+		}
 	}
+	delete[] buffer;
 	return true;
 }
 
@@ -148,7 +170,7 @@ void CSFFile::encode(std::wstring& src, char* buffer)
 		buffer[i] = ~pSrc[i];
 }
 
-bool CSFFile::write(std::ofstream& fout)
+bool CSFFile::write(std::ofstream& fout) const
 {
 	if (!fout.is_open())
 		return false;

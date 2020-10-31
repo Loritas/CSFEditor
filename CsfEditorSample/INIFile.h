@@ -1,11 +1,11 @@
 #pragma once
 
-#include <fstream>
-#include <string>
+#include "IRAFile.h"
+
 #include <map> // consider to use unordered_map for efficency if order is not that essential
 #include <vector>
 
-class INIFile final
+class INIFile final : public IRAFile
 {
 private:
     using INISection = std::map<std::string, std::string>;
@@ -21,7 +21,11 @@ public:
     INIFile& operator=(const INIFile& rhs) = default;
     INIFile& operator=(INIFile&& rhs) = default;
 
-    bool save_to_file(std::string path) const;
+    bool open_from_file(const std::string& path);
+    bool save_to_file(const std::string& path) const;
+    bool if_from_file() const;
+    std::string get_path() const;
+
     std::map<std::string, INISection>& get_map();
 
     INISection& operator[](std::string section);

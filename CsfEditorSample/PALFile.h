@@ -1,13 +1,12 @@
 #pragma once
 
-#include <fstream>
-#include <string>
+#include "IRAFile.h"
 
 struct PALColor {
     unsigned char R, G, B;
 };
 
-class PALFile
+class PALFile final : public IRAFile
 {
 private:
     const int kCapacity = 768;
@@ -22,7 +21,11 @@ public:
     PALFile& operator=(const PALFile& rhs) = default;
     PALFile& operator=(PALFile&& rhs) = default;
 
-    bool save_to_file(std::string path) const;
+    bool open_from_file(const std::string& path);
+    bool save_to_file(const std::string& path) const;
+    bool if_from_file() const;
+    std::string get_path() const;
+
     PALColor* get_array();
 
     PALColor& operator[](size_t index);

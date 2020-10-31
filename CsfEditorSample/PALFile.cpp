@@ -7,20 +7,37 @@ PALFile::PALFile()
 
 PALFile::PALFile(std::string path)
 {
+	open_from_file(path);
+}
+
+bool PALFile::open_from_file(const std::string& path)
+{
 	std::ifstream fin;
 	fin.open(path, std::ios::in | std::ios::binary);
 	if (open(fin)) {
 		_path = path;
+		return true;
 	}
+	return false;
 }
 
-bool PALFile::save_to_file(std::string path) const
+bool PALFile::save_to_file(const std::string& path) const
 {
 	std::ofstream fout;
 	fout.open(path, std::ios::out);
 	bool flag = write(fout);
 	fout.close();
 	return flag;
+}
+
+bool PALFile::if_from_file() const
+{
+	return !_path.empty();
+}
+
+std::string PALFile::get_path() const
+{
+	return _path;
 }
 
 PALColor* PALFile::get_array()
