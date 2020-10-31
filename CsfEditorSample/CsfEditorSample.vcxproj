@@ -143,10 +143,12 @@
     <ClCompile Include="CsfEditorSample.cpp" />
     <ClCompile Include="CSFFile.cpp" />
     <ClCompile Include="INIFile.cpp" />
+    <ClCompile Include="PALFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSFFile.h" />
     <ClInclude Include="INIFile.h" />
+    <ClInclude Include="PALFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
