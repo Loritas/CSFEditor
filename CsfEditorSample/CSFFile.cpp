@@ -162,7 +162,7 @@ std::wstring CSFFile::decode(char* src, size_type len)
 	return ret;
 }
 
-void CSFFile::encode(std::wstring& src, char* buffer)
+void CSFFile::encode(const std::wstring& src, char* buffer) const
 {
 	size_t length = src.length() << 1;
 	char* pSrc = (char*)&src[0];
